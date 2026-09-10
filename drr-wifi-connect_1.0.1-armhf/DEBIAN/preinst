@@ -1,0 +1,9 @@
+#! /bin/bash
+
+# Add all NetworkManager .nmconnection files to group netdev and make them group readable
+
+chgrp netdev /etc/NetworkManager/system-connections/*
+chmod g+r /etc/NetworkManager/system-connections/*
+
+# add user drr to group netdev
+adduser drr netdev
