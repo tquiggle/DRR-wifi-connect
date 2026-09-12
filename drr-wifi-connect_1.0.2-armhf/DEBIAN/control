@@ -1,0 +1,6 @@
+Package: drr-wifi-connect-armhf
+Version: 1.0.2
+Architecture: armhf
+Maintainer: tquiggle@gmail.com
+Homepage: https://github.com/tquiggle/DRR-wifi-connect
+Description: A modified version of balena-os wifi-connect for use with the Diecast Remote Raceway project

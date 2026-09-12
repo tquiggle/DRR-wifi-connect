@@ -1,4 +1,0 @@
-#! /bin/bash
-
-# add user drr to group netdev
-adduser drr netdev

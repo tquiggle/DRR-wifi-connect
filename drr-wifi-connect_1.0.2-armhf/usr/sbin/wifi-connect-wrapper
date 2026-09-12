@@ -1,0 +1,45 @@
+#! /usr/bin/bash
+
+export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
+
+sleep 2
+
+# Make sure members of group netdev can read nmconnection files
+# The DRR starting-gate needs to fetch the psk to send (encrypted)
+# to the finish line when an update is available
+
+# In Bookworm, the *.nmconnection files were located in
+# /etc/NetworkManager/system-connections. In Trixie, the .nmconnection
+# files are created in /run/NetworkManager/system-connections dynamically
+# on each boot from yaml files in /etc/netplan. Since they are recreated
+# the permissions need to be reset on every boot.
+#
+# To support both Bookworm and Trixie, try to reset the permissions in 
+# both directories.
+
+chown root:netdev /etc/NetworkManager/system-connections/* 2>/dev/null
+chmod g+r /etc/NetworkManager/system-connections/* 2>/dev/null
+chown root:netdev /etc/NetworkManager/system-connections/* 2>/dev/null
+chmod g+r /etc/NetworkManager/system-connections/* 2>/dev/null
+
+# just to be safe...
+rfkill unblock all
+
+# Is there an active WiFi connection?
+iwgetid -r
+
+if [ $? -eq 0 ]; then
+    echo 'Skipping WiFi Connect'
+    exit 0
+else
+    echo 'Starting WiFi Connect'
+    /usr/sbin/wifi-connect "$@"
+    rc=$?
+    echo "wifi-connect returned $rc"
+
+    # Reset ownership and permissions for any newly created nmconnection
+    chown root:netdev /etc/NetworkManager/system-connections/* 2>/dev/null
+    chmod g+r /etc/NetworkManager/system-connections/* 2>/dev/null
+    chown root:netdev /etc/NetworkManager/system-connections/* 2>/dev/null
+    chmod g+r /etc/NetworkManager/system-connections/* 2>/dev/null
+fi
